@@ -3,6 +3,7 @@ var io = require('socket.io')(server);
 var fs = require('fs');
 var tsv = require('tsv');
 var timer = require('./timer');
+var sudo = require('sudo');
 
 server.listen(3000);
 
@@ -91,15 +92,16 @@ io.on('connection', function (socket) {
     socket.on('shutdown', function (data) {
         console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - shutdown recieved');
         socket.emit('shutdown-received');
+        sudo.shutdown();
     });
 
     socket.on('reboot', function (data) {
         console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - reboot recieved');
         socket.emit('reboot-received');
+        sudo.reboot();
     });
 
     socket.on('stop-timer', function (data) {
-        console.log()
         if (timer.isRunning()) timer.stopTimer();
         console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - stop-timer received');
         socket.emit('timer-stopped')
@@ -110,6 +112,5 @@ io.on('connection', function (socket) {
         console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - start-timer received');
         socket.emit('timer-started')
     });
-
 });
 
