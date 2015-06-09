@@ -3,7 +3,7 @@ var io = require('socket.io')(server);
 var fs = require('fs');
 var tsv = require('tsv');
 var timer = require('./timer');
-var sudo = require('sudo');
+var sudo = require('./sudo');
 
 server.listen(3000);
 
