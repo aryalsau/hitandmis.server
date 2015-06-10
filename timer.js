@@ -1,6 +1,7 @@
 var fs = require('fs');
 var tsv = require('tsv');
 var netSocket = require('net').Socket;
+var clog = require('./clog');
 
 var stopVariable;
 var camport = 8000;
@@ -33,12 +34,13 @@ function dynamicRepeat(verbose,period,windowList) {
     function run(verbose) {
         window = isInSomeWindow(windowList);
         if (window){
-            if(verbose) console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[36mTIC\x1b[0m - in window:'+ window.id + ' expTime:' + window.expTime + '(ms) waitTime:' + window.waitTime+'(s)');
+            if(verbose) console.log(clog.tick().blue()+' '+clog.ticktock().cyan()+' : in window - '+ window.id + ' expTime - ' + window.expTime + '(ms) waitTime - ' + window.waitTime+'(s)');
             captureCallback(window.expTime);
             localPeriod = window.expTime + 1000*window.waitTime;
         } else {
-            if(verbose) console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[36mTOK\x1b[0m - not in a window');
-            localPeriod = 1000;
+            if(verbose) console.log(clog.tick().blue()+' '+clog.ticktock().cyan()+' : not in a window');
+            pulse();
+            localPeriod = 5000;
         }
         timerVariable = setTimeout(function(){run(verbose)}, localPeriod);
     }
@@ -93,9 +95,13 @@ function captureCallback(expTime){
         client.destroy()
     });
     client.on('close', function() {
-        console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mCAM\x1b[0m - capture '+ expTime +' : '+ socketData);
+        console.log(clog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' file - ' + socketData)
         io.sockets.emit('image',{file:socketData});
     });
+}
+
+function pulse(){
+    io.sockets.emit('pulse',{time:clog.tick().substr(1, 8),pulse:clog.ticktock()});
 }
 
 

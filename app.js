@@ -4,6 +4,7 @@ var fs = require('fs');
 var tsv = require('tsv');
 var timer = require('./timer');
 var sudo = require('./sudo');
+var clog = require('./clog');
 
 server.listen(3000);
 
@@ -13,15 +14,14 @@ timer.startTimer(schedulePath);
 
 function handler (request, response) {
 
-    console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[32m'+request.method.substr(0,3)+'\x1b[0m'+' - on url:'+request.url);
-
     switch (request.url){
         case '/schedule':
             if (request.method == 'GET') {
                 fs.readFile(schedulePath, 'utf8', function (err,data) {
                     if (err) {
-                        return console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+err);
+                        return console.log(clog.tick().blue()+' '+err);
                     } else {
+                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
                         schedule = tsv.parse(data);
                         response.end(JSON.stringify(schedule));
                     }
@@ -34,11 +34,11 @@ function handler (request, response) {
                 request.on('end', function () {
                     fs.writeFile(schedulePath, tsv.stringify(JSON.parse(requestBody)) , function(err) {
                         if(err) {
-                            console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[32m'+request.method.substr(0,3)+'\x1b[0m'+' - on url:'+request.url+' : schedule update failed');
+                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : schedule update failed');
                             response.end(JSON.stringify({data:'schedule update failed'}));
                             return console.log(err);
                         } else {
-                            console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[32m'+request.method.substr(0,3)+'\x1b[0m'+' - on url:'+request.url+' : schedule updated');
+                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : schedule updated');
                             response.end(JSON.stringify({data:'schedule updated'}));
                         }
                     });
@@ -55,11 +55,10 @@ function handler (request, response) {
                     requestBody += chunk;
                 });
                 request.on('end', function () {
-                    console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[32m'+request.method.substr(0,3)+'\x1b[0m'+' - on url:'+request.url+' : image '+ requestBody);
-                    //response.end(JSON.stringify({data:'image'}));
+                    console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : image '+ requestBody);
                     fs.readFile(requestBody, function (err,data) {
                         if (err) {
-                            return console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+err);
+                            return console.log(clog.tick().blue()+' '+err);
                         } else {
                             response.end(data);
                         }
@@ -77,7 +76,7 @@ function handler (request, response) {
                 request.on('end', function () {
                     //console.log(JSON.parse(requestBody));
                     //TODO - write the configuration to disk on the server
-                    console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[32m'+request.method.substr(0,3)+'\x1b[0m'+' - on url:'+request.url+' : config updated');
+                    console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : config updated');
                     response.end(JSON.stringify({data:'config updated'}));
                 });
             }
@@ -87,29 +86,29 @@ function handler (request, response) {
 }
 
 io.on('connection', function (socket) {
-    console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - User Connected');
+    console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : User Connected');
 
     socket.on('shutdown', function (data) {
-        console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - shutdown recieved');
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : shutdown received');
         socket.emit('shutdown-received');
         sudo.shutdown();
     });
 
     socket.on('reboot', function (data) {
-        console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - reboot recieved');
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : reboot received');
         socket.emit('reboot-received');
         sudo.reboot();
     });
 
     socket.on('stop-timer', function (data) {
         if (timer.isRunning()) timer.stopTimer();
-        console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - stop-timer received');
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : stop-timer received');
         socket.emit('timer-stopped')
     });
 
     socket.on('start-timer', function (data) {
         if (!timer.isRunning()) timer.startTimer(schedulePath);
-        console.log('\x1b[35m['+(new Date().toString().substr(16, 8))+']\x1b[0m '+'\x1b[31mSOC\x1b[0m - start-timer received');
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : start-timer received');
         socket.emit('timer-started')
     });
 });
