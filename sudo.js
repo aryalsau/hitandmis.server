@@ -24,7 +24,7 @@ module.exports.reboot = function (callback){
 
 module.exports.mountDisk = function (callback){
     console.log(clog.tick().blue()+' '+'SUDO'.abbr().yellow()+' : mount issued');
-    module.exports.execute('sudo mount /dev/sdb1 /dev/usbdrive',callback);
+    module.exports.execute('sudo mount /dev/sdb1 /media/usbdrive',callback);
 };
 
 module.exports.unmountDisk = function (callback){
@@ -34,7 +34,7 @@ module.exports.unmountDisk = function (callback){
 
 module.exports.setTime = function (time, callback){
     console.log(clog.tick().blue()+' '+'SUDO'.abbr().yellow()+' : system time set to ' + time);
-    module.exports.execute('date +%Y-%m-%d" "%H:%M:%S -s "'+time+'"',callback);
+    module.exports.execute('sudo date +%Y-%m-%d" "%H:%M:%S -s "'+time+'"',callback);
 };
 
 module.exports.ls = function (callback){
