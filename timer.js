@@ -3,7 +3,7 @@ var tsv = require('tsv');
 var netSocket = require('net').Socket;
 var clog = require('./clog');
 
-var stopVariable;
+var repeater = 0;
 var camport = 8000;
 var hostip = 'localhost';
 var io;
@@ -66,17 +66,21 @@ function startTimer(schedulePath) {
             return console.log(err);
         } else {
             var schedule = tsv.parse(data);
-            stopVariable = dynamicRepeat(true,1000,schedule);
+            repeater = dynamicRepeat(true,1000,schedule);
         }
     });
 }
 
 function stopTimer(){
-    stopVariable.stop();
+    repeater.stop();
 }
 
 function isRunning(){
-    return stopVariable.isRunning();
+    if (repeater){
+        return repeater.isRunning();
+    } else {
+        return repeater;
+    }
 }
 
 

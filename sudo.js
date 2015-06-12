@@ -33,8 +33,8 @@ module.exports.unmountDisk = function (callback){
 };
 
 module.exports.setTime = function (time, callback){
-    console.log(clog.tick().blue()+' '+'SUDO'.abbr().yellow()+' : system time set to '+time);
-    //module.exports.execute('sudo date -s "'+time+'"',callback);
+    console.log(clog.tick().blue()+' '+'SUDO'.abbr().yellow()+' : system time set to ' + time);
+    module.exports.execute('date +%Y-%m-%d" "%H:%M:%S -s "'+time+'"',callback);
 };
 
 module.exports.ls = function (callback){

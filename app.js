@@ -10,7 +10,7 @@ server.listen(3000);
 
 var schedulePath = 'tempschedule';
 timer.setio(io);
-timer.startTimer(schedulePath);
+//timer.startTimer(schedulePath);
 
 function handler (request, response) {
 
@@ -116,7 +116,7 @@ io.on('connection', function (socket) {
 
     socket.on('sync', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : sync received');
-        sudo.setTime(function(){
+        sudo.setTime(data.time,function(){
             socket.emit('sync-received');
         });
     });
