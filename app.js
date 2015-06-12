@@ -100,6 +100,27 @@ io.on('connection', function (socket) {
         sudo.reboot();
     });
 
+    socket.on('mount', function (data) {
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : mount received');
+        sudo.mountDisk(function(){
+            socket.emit('mount-received');
+        });
+    });
+
+    socket.on('unmount', function (data) {
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : unmount received');
+        sudo.unmountDisk(function(){
+            socket.emit('unmount-received');
+        });
+    });
+
+    socket.on('sync', function (data) {
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : sync received');
+        sudo.setTime(function(){
+            socket.emit('sync-received');
+        });
+    });
+
     socket.on('stop-timer', function (data) {
         if (timer.isRunning()) timer.stopTimer();
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : stop-timer received');
