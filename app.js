@@ -5,8 +5,11 @@ var tsv = require('tsv');
 var timer = require('./timer');
 var sudo = require('./sudo');
 var clog = require('./clog');
+var config = require('./config');
 
 server.listen(3000);
+
+console.log(clog.tick().blue()+' '+'APP'.abbr().white()+' : server online on port '+3000);
 
 var schedulePath = 'schedule.sch';
 timer.setio(io);
@@ -77,7 +80,11 @@ function handler (request, response) {
                     //console.log(JSON.parse(requestBody));
                     //TODO - write the configuration to disk on the server
                     console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : config updated');
-                    response.end(JSON.stringify({data:'config updated'}));
+
+                    config.writeConfig(JSON.parse(requestBody),function(){
+                        response.end(JSON.stringify({data:'config updated'}))
+                    });
+
                 });
             }
             break;
