@@ -8,7 +8,7 @@ var clog = require('./clog');
 
 server.listen(3000);
 
-var schedulePath = 'tempschedule';
+var schedulePath = 'schedule.sch';
 timer.setio(io);
 //timer.startTimer(schedulePath);
 
