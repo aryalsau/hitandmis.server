@@ -109,16 +109,12 @@ io.on('connection', function (socket) {
 
     socket.on('mount', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : mount received');
-        sudo.mountDisk(function(){
-            socket.emit('mount-received');
-        });
+        sudo.mountDisk(function(){socket.emit('disk-mounted');},function(){socket.emit('disk-mount-failed');});
     });
 
     socket.on('unmount', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : unmount received');
-        sudo.unmountDisk(function(){
-            socket.emit('unmount-received');
-        });
+        sudo.unmountDisk(function(){socket.emit('disk-unmounted');},function(){socket.emit('disk-unmount-failed');});
     });
 
     socket.on('sync', function (data) {

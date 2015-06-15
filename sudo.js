@@ -5,8 +5,8 @@ var exec = require('child_process').exec;
 
 module.exports.execute = function (command, callback){
     exec(command, function(error, stdout, stderr){
-        console.log(stdout);
-        console.log(stderr);
+        console.log(stdout.green());
+        console.log(stderr.red());
         if (callback) callback();
     });
 };
@@ -22,15 +22,32 @@ module.exports.reboot = function (callback){
     module.exports.execute('sudo shutdown -r now',callback);
 };
 
-module.exports.mountDisk = function (callback){
+module.exports.mountDisk = function (successCallback,failCallbac){
     console.log(clog.tick().blue()+' '+'SUDO'.abbr().yellow()+' : mount issued');
-    module.exports.execute('sudo mount /dev/sdb1 /media/usbdrive',callback);
+    exec('sudo mount /dev/sdb1 /media/usbdrive', function(error, stdout, stderr){
+        //console.log(stdout.green());
+        //console.log(stderr.red());
+        if (stderr){
+            if (failCallbac) failCallbac();
+        } else {
+            if (successCallback) successCallback();
+        }
+    });
 };
 
-module.exports.unmountDisk = function (callback){
+module.exports.unmountDisk = function (successCallback,failCallbac){
     console.log(clog.tick().blue()+' '+'SUDO'.abbr().yellow()+' : umount issued');
-    module.exports.execute('sudo umount /dev/sdb1 -l',callback);
+    exec('sudo umount /dev/sdb1 -l', function(error, stdout, stderr){
+        //console.log(stdout.green());
+        //console.log(stderr.red());
+        if (stderr){
+            if (failCallbac) failCallbac();
+        } else {
+            if (successCallback) successCallback();
+        }
+    });
 };
+
 
 module.exports.setTime = function (time, callback){
     console.log(clog.tick().blue()+' '+'SUDO'.abbr().yellow()+' : system time set to ' + time);
