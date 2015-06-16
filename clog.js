@@ -1,19 +1,19 @@
-_reset = "\x1b[0m"
-_bright = "\x1b[1m"
-_dim = "\x1b[2m"
-_underscore = "\x1b[4m"
-_blink = "\x1b[5m"
-_reverse = "\x1b[7m"
-_hidden = "\x1b[8m"
+_reset = "\x1b[0m";
+_bright = "\x1b[1m";
+_dim = "\x1b[2m";
+_underscore = "\x1b[4m";
+_blink = "\x1b[5m";
+_reverse = "\x1b[7m";
+_hidden = "\x1b[8m";
 
-_fgBlack = "\x1b[30m"
-_fgRed = "\x1b[31m"
-_fgGreen = "\x1b[32m"
-_fgYellow = "\x1b[33m"
-_fgBlue = "\x1b[34m"
-_fgMagenta = "\x1b[35m"
-_fgCyan = "\x1b[36m"
-_fgWhite = "\x1b[37m"
+_fgBlack = "\x1b[30m";
+_fgRed = "\x1b[31m";
+_fgGreen = "\x1b[32m";
+_fgYellow = "\x1b[33m";
+_fgBlue = "\x1b[34m";
+_fgMagenta = "\x1b[35m";
+_fgCyan = "\x1b[36m";
+_fgWhite = "\x1b[37m";
 
 
 String.prototype.reset = function(){
