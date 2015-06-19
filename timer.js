@@ -8,6 +8,16 @@ var camport = 8000;
 var hostip = 'localhost';
 var io;
 
+var log;
+
+module.exports.loggingOn = function(){
+    log = true;
+};
+
+module.exports.loggingOff = function(){
+    log = false;
+};
+
 module.exports.setio = function(mainIO){
     io = mainIO;
 };
@@ -66,7 +76,7 @@ function startTimer(schedulePath) {
             return console.log(err);
         } else {
             var schedule = tsv.parse(data);
-            repeater = dynamicRepeat(true,1000,schedule);
+            repeater = dynamicRepeat(true,5000,schedule);
         }
     });
 }
@@ -113,3 +123,5 @@ function pulse(){
 module.exports.startTimer = startTimer;
 module.exports.stopTimer = stopTimer;
 module.exports.isRunning = isRunning;
+
+module.exports.loggingOn(); //logging on by default

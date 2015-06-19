@@ -15,9 +15,9 @@ module.exports.loggingOff = function(){
 module.exports.readSchedule = function(schedulePath,callback){
     fs.readFile(schedulePath, 'utf8', function (err,content) {
         if (err) {
-            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().green()+' : read failed'.red()+' '+err.toString().red());
+            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().yellow()+' : read failed'.red()+' '+err.toString().red());
         } else {
-            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().green()+' : read success');
+            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().yellow()+' : read success');
             var schedule = tsv.parse(content);
         }
         if (callback) callback.call(null,err,schedule)
@@ -27,9 +27,9 @@ module.exports.readSchedule = function(schedulePath,callback){
 module.exports.writeSchedule = function(schedulePath,JSONschedule,callback){
     fs.writeFile(schedulePath, tsv.stringify(JSON.parse(JSONschedule)) , function(err) {
         if (err) {
-            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().green()+' : write failed'.red()+' '+err.toString().red());
+            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().yellow()+' : write failed'.red()+' '+err.toString().red());
         } else {
-            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().green()+' : write success');
+            if(log) console.log(clog.tick().blue()+' '+'SCH'.abbr().yellow()+' : write success');
         }
         if (callback) callback.call(null,err)
     });

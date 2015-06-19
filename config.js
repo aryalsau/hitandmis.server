@@ -14,9 +14,9 @@ module.exports.loggingOff = function(){
 module.exports.readConfig = function(configPath,callback){
     fs.readFile(configPath, 'utf8', function (err,content) {
         if (err) {
-            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : read failed'.red()+' '+err.toString().red());
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().blue()+' : read failed'.red()+' '+err.toString().red());
         } else {
-            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : read success');
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().blue()+' : read success');
             var config = parseConfig(content)
         }
         if (callback) callback.call(null,err,config)
@@ -27,9 +27,9 @@ module.exports.writeConfig = function(configPath,JSONconfig,callback){
     config = JSON.parse(JSONconfig);
     fs.writeFile(configPath, 'CAMDAEMON_SITE='+config.site+'\nCAMDAEMON_CAM='+config.camera+'\nCAMDAEMON_PATH='+config.path , function(err) {
         if (err) {
-            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : write failed'.red()+' '+err.toString().red());
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().blue()+' : write failed'.red()+' '+err.toString().red());
         } else {
-            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : write success');
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().blue()+' : write success');
         }
         if (callback) callback.call(null,err)
     });

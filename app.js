@@ -14,7 +14,7 @@ console.log(clog.tick().blue()+' '+'APP'.abbr().white()+' : server online on por
 var configFile = '../camdaemon/config.cfg';
 var scheduleFile = 'schedule.sch';
 timer.setio(io);
-//timer.startTimer(scheduleFile);
+timer.startTimer(scheduleFile);
 
 function handler (request, response) {
 

@@ -77,10 +77,6 @@ String.prototype.white = function(){
     return _fgWhite+this.reset()
 };
 
-String.prototype.blue = function(){
-    return _fgBlue+this.reset()
-};
-
 String.prototype.abbr = function (){
     return this.substr(0,3);
 };
