@@ -23,7 +23,7 @@ function handler (request, response) {
             if (request.method == 'GET') {
                 schedule.readSchedule(scheduleFile,function(err,scheduleData){
                     if (err) {
-                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
+                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' '+err.toString().red());
                         response.end();
                     } else {
                         console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);

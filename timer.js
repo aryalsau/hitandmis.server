@@ -24,7 +24,7 @@ module.exports.setio = function(mainIO){
 
 function isInWindow(window){
     var now = new Date();
-    return (new Date(window.start) < now && now < new Date(window.end));
+    return ((new Date(window.start) < now) && (now < new Date(window.end)));
 }
 
 function isInSomeWindow(windows){
@@ -44,9 +44,9 @@ function dynamicRepeat(verbose,period,windowList) {
     function run(verbose) {
         window = isInSomeWindow(windowList);
         if (window){
-            if(verbose) console.log(clog.tick().blue()+' '+clog.ticktock().cyan()+' : in window - '+ window.id + ' expTime - ' + window.expTime + '(ms) waitTime - ' + window.waitTime+'(s)');
+            if(verbose) console.log(clog.tick().blue()+' '+clog.ticktock().cyan()+' : in window - '+ window.id + ' : expTime - ' + window.expTime + '(ms) : waitTime - ' + window.waitTime+'(s)');
             captureCallback(window.expTime);
-            localPeriod = window.expTime + 1000*window.waitTime;
+            localPeriod = parseInt(window.expTime) + 1000*(10+parseInt(window.waitTime));
         } else {
             if(verbose) console.log(clog.tick().blue()+' '+clog.ticktock().cyan()+' : not in a window');
             pulse();
@@ -97,7 +97,10 @@ function isRunning(){
 function captureCallback(expTime){
     client = new netSocket();
     client.setEncoding('binary');
-    socketData = '';
+    client.setTimeout(0,function(){
+        client.destroy();
+    });
+    var socketData = '';
     client.connect(camport, hostip, function() {
         client.write('capture '+expTime);
     });
@@ -112,10 +115,15 @@ function captureCallback(expTime){
         console.log(clog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' file - ' + socketData);
         io.sockets.emit('image',{file:socketData});
         io.sockets.emit('pulse',{time:clog.tick().substr(1, 8),pulse:'capture'});
+        client.destroy();
     });
-    client.on('error', function() {
+    client.on('close', function() {
         console.log(clog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' error connecting');
         client.destroy()
+    });
+    client.on('error', function(err) {
+        console.log(clog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' error connecting' + ' ' + err.toString().red());
+        client.destroy();
     });
 
 }
