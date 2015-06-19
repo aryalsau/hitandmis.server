@@ -58,11 +58,12 @@ function handler (request, response) {
                     requestBody += chunk;
                 });
                 request.on('end', function () {
-                    console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : image '+ requestBody);
                     fs.readFile(requestBody, function (err,data) {
                         if (err) {
-                            return console.log(clog.tick().blue()+' '+err.red());
+                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' '+err.toString().red());
+                            response.end();
                         } else {
+                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
                             response.end(data);
                         }
                     });
@@ -74,10 +75,10 @@ function handler (request, response) {
             if (request.method == 'GET') {
                 config.readConfig(configFile,function(err,configData){
                     if (err) {
-                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
+                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+ ' '+ requestBody);
                         response.end();
                     } else {
-                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
+                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+ ' '+ requestBody);
                         response.end(JSON.stringify(configData));
                     }
                 });
