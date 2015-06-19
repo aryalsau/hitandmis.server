@@ -109,10 +109,15 @@ function captureCallback(expTime){
         client.destroy()
     });
     client.on('close', function() {
-        console.log(clog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' file - ' + socketData)
+        console.log(clog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' file - ' + socketData);
         io.sockets.emit('image',{file:socketData});
         io.sockets.emit('pulse',{time:clog.tick().substr(1, 8),pulse:'capture'});
     });
+    client.on('error', function() {
+        console.log(clog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' error connecting');
+        client.destroy()
+    });
+
 }
 
 function pulse(){
