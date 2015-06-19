@@ -1,19 +1,42 @@
 var fs = require('fs');
 var clog = require('./clog');
 
+var log;
 
-
-module.exports.writeConfig = function (configData,callback){
-    fs.writeFile(configFile, 'CAMDAEMON_SITE='+configData.site+'\n'+
-                             'CAMDAEMON_CAM='+configData.camera+'\n'+
-                             'CAMDAEMON_PATH='+configData.path, function(){
-        callback();
-        console.log(clog.tick().blue()+' '+'CFG'.abbr().yellow()+' : config updated')});
+module.exports.loggingOn = function(){
+    log = true;
 };
 
-module.exports.readConfig = function (callback){
-    var content = fs.readFileSync(configFile,'utf-8');
-    var tempArray1 = content.split('\n');
+module.exports.loggingOff = function(){
+    log = false;
+};
+
+module.exports.readConfig = function(configPath,callback){
+    fs.readFile(configPath, 'utf8', function (err,content) {
+        if (err) {
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : read failed'.red()+' '+err.toString().red());
+        } else {
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : read success');
+            var config = parseConfig(content)
+        }
+        if (callback) callback.call(null,err,config)
+    });
+};
+
+module.exports.writeConfig = function(configPath,JSONconfig,callback){
+    config = JSON.parse(JSONconfig);
+    fs.writeFile(configPath, 'CAMDAEMON_SITE='+config.site+'\nCAMDAEMON_CAM='+config.camera+'\nCAMDAEMON_PATH='+config.path , function(err) {
+        if (err) {
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : write failed'.red()+' '+err.toString().red());
+        } else {
+            if(log) console.log(clog.tick().blue()+' '+'CFG'.abbr().green()+' : write success');
+        }
+        if (callback) callback.call(null,err)
+    });
+};
+
+function parseConfig(rawData){
+    var tempArray1 = rawData.split('\n');
     for (var i=0; i<tempArray1.length; i++) {
         var tempArray2 = tempArray1[i].split('=');
         switch (tempArray2[0]) {
@@ -28,5 +51,7 @@ module.exports.readConfig = function (callback){
                 break;
         }
     }
-    return {path:pathVar, cam:camVar, site:siteVar}
-};
+    return {path:pathVar, cam:camVar, site:siteVar};
+}
+
+module.exports.loggingOn(); //logging on by default

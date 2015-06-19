@@ -1,7 +1,7 @@
 var server = require('http').createServer(handler);
 var io = require('socket.io')(server);
 var fs = require('fs');
-var tsv = require('tsv');
+var schedule = require('./schedule');
 var timer = require('./timer');
 var sudo = require('./sudo');
 var clog = require('./clog');
@@ -11,22 +11,23 @@ server.listen(3000);
 
 console.log(clog.tick().blue()+' '+'APP'.abbr().white()+' : server online on port '+3000);
 
-var schedulePath = 'schedule.sch';
+var configFile = '../camdaemon/config.cfg';
+var scheduleFile = 'schedule.sch';
 timer.setio(io);
-//timer.startTimer(schedulePath);
+//timer.startTimer(scheduleFile);
 
 function handler (request, response) {
 
     switch (request.url){
         case '/schedule':
             if (request.method == 'GET') {
-                fs.readFile(schedulePath, 'utf8', function (err,data) {
+                schedule.readSchedule(scheduleFile,function(err,scheduleData){
                     if (err) {
-                        return console.log(clog.tick().blue()+' '+err);
+                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
+                        response.end();
                     } else {
                         console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
-                        schedule = tsv.parse(data);
-                        response.end(JSON.stringify(schedule));
+                        response.end(JSON.stringify(scheduleData));
                     }
                 });
             } else if (request.method == 'POST'){
@@ -35,11 +36,10 @@ function handler (request, response) {
                     requestBody += chunk;
                 });
                 request.on('end', function () {
-                    fs.writeFile(schedulePath, tsv.stringify(JSON.parse(requestBody)) , function(err) {
+                    schedule.writeSchedule(scheduleFile,requestBody,function(err){
                         if(err) {
-                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : schedule update failed');
+                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : schedule update failed'+' '+err.red());
                             response.end(JSON.stringify({data:'schedule update failed'}));
-                            return console.log(err);
                         } else {
                             console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : schedule updated');
                             response.end(JSON.stringify({data:'schedule updated'}));
@@ -61,7 +61,7 @@ function handler (request, response) {
                     console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : image '+ requestBody);
                     fs.readFile(requestBody, function (err,data) {
                         if (err) {
-                            return console.log(clog.tick().blue()+' '+err);
+                            return console.log(clog.tick().blue()+' '+err.red());
                         } else {
                             response.end(data);
                         }
@@ -71,21 +71,34 @@ function handler (request, response) {
             break;
 
         case '/config':
-            if (request.method == 'POST') {
+            if (request.method == 'GET') {
+                config.readConfig(configFile,function(err,configData){
+                    if (err) {
+                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
+                        response.end();
+                    } else {
+                        console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url);
+                        response.end(JSON.stringify(configData));
+                    }
+                });
+            } else if (request.method == 'POST') {
                 var requestBody = '';
                 request.on('data', function (chunk) {
                     requestBody += chunk;
                 });
                 request.on('end', function () {
-                    //console.log(JSON.parse(requestBody));
-                    //TODO - write the configuration to disk on the server
-                    console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : config updated');
-
-                    config.writeConfig(JSON.parse(requestBody),function(){
-                        response.end(JSON.stringify({data:'config updated'}))
+                    config.writeConfig(configFile,requestBody,function(err){
+                        if(err) {
+                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : config update failed'+' '+err.red());
+                            response.end(JSON.stringify({data:'config update failed'}));
+                        } else {
+                            console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : config updated');
+                            response.end(JSON.stringify({data:'config updated'}));
+                        }
                     });
-
                 });
+            } else {
+                response.end();
             }
             break;
 
@@ -93,34 +106,57 @@ function handler (request, response) {
 }
 
 io.on('connection', function (socket) {
-    console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : User Connected');
+    console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : user connected');
 
     socket.on('shutdown', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : shutdown received');
-        socket.emit('shutdown-received');
-        sudo.shutdown();
+        sudo.shutdown(function(err){
+            if (err){
+            } else{
+                socket.emit('shutdown-received');
+            }
+        });
     });
 
     socket.on('reboot', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : reboot received');
-        socket.emit('reboot-received');
-        sudo.reboot();
+        sudo.reboot(function(err){
+            if (err){
+            } else{
+                socket.emit('reboot-received');
+            }
+        });
     });
 
     socket.on('mount', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : mount received');
-        sudo.mountDisk(function(){socket.emit('disk-mounted');},function(){socket.emit('disk-mount-failed');});
+        sudo.mountDisk(function(err){
+            if (err){
+                socket.emit('disk-mount-failed');
+            } else{
+                socket.emit('disk-mounted');
+            }
+        });
     });
 
     socket.on('unmount', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : unmount received');
-        sudo.unmountDisk(function(){socket.emit('disk-unmounted');},function(){socket.emit('disk-unmount-failed');});
+        sudo.unmountDisk(function(err){
+            if (err){
+                socket.emit('disk-unmount-failed');
+            } else{
+                socket.emit('disk-unmounted');
+            }
+        });
     });
 
     socket.on('sync', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : sync received');
-        sudo.setTime(data.time,function(){
-            socket.emit('sync-received');
+        sudo.setTime(function(err){
+            if (err){
+            } else{
+                socket.emit('sync-received');
+            }
         });
     });
 
@@ -131,9 +167,13 @@ io.on('connection', function (socket) {
     });
 
     socket.on('start-timer', function (data) {
-        if (!timer.isRunning()) timer.startTimer(schedulePath);
+        if (!timer.isRunning()) timer.startTimer(scheduleFile);
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : start-timer received');
         socket.emit('timer-started')
     });
+
+    socket.on('disconnect', function() {
+        console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : user disconnected');
+    })
 });
 
