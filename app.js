@@ -153,7 +153,7 @@ io.on('connection', function (socket) {
 
     socket.on('sync', function (data) {
         console.log(clog.tick().blue()+' '+'SOCKET'.abbr().magenta()+' : sync received');
-        sudo.setTime(function(err){
+        sudo.setTime(data,function(err){
             if (err){
             } else{
                 socket.emit('sync-received');

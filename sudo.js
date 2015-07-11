@@ -80,8 +80,8 @@ module.exports.unmountDisk = function (callback){
     });
 };
 
-module.exports.setTime = function (time, callback){
-    exec('sudo date +%Y-%m-%d" "%H:%M:%S -s "'+time+'"', function(err, stdout, stderr){
+module.exports.setTime = function (timeStamp, callback){
+    exec('sudo date +%Y-%m-%d" "%H:%M:%S -s "'+timeStamp.time+'"', function(err, stdout, stderr){
         if (err){
             if(log) console.log(clog.tick().blue()+' '+'SUD'.abbr().yellow()+' : set time failed'.red()+' '+err.toString().red());
             if (callback) callback.call(true);
@@ -89,7 +89,7 @@ module.exports.setTime = function (time, callback){
                     if(log) console.log(clog.tick().blue()+' '+'SUD'.abbr().yellow()+' : set time failed'.red()+' '+stderr.toString().red());
                     if (callback) callback.call(true);
                 } else {
-                    if(log) console.log(clog.tick().blue()+' '+'SUD'.abbr().yellow()+' : set time success '+time);
+                    if(log) console.log(clog.tick().blue()+' '+'SUD'.abbr().yellow()+' : set time success '+timeStamp.time);
                     if (callback) callback.call(false);
                 }
         }
