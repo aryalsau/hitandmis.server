@@ -43,6 +43,8 @@ function handler (request, response) {
                         } else {
                             console.log(clog.tick().blue()+' '+request.method.abbr().green()+' : on url '+request.url+' : schedule updated');
                             response.end(JSON.stringify({data:'schedule updated'}));
+                            if (timer.isRunning()) timer.stopTimer();
+                            if (!timer.isRunning()) timer.startTimer(scheduleFile);
                         }
                     });
                 });
