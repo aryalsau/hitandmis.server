@@ -17,74 +17,74 @@ _fgWhite = "\x1b[37m";
 
 
 String.prototype.reset = function(){
-    return this+_reset
+	return this+_reset
 };
 
 String.prototype.bright = function(){
-    return _bright+this.reset()
+	return _bright+this.reset()
 };
 
 String.prototype.dim = function(){
-    return _dim+this.reset()
-}
+	return _dim+this.reset()
+};
 
 String.prototype.underscore = function(){
-    return _underscore+this.reset()
-}
+	return _underscore+this.reset()
+};
 
 String.prototype.blink = function(){
-    return _blink+this.reset()
-}
+	return _blink+this.reset()
+};
 
 String.prototype.reverse = function(){
-    return _reverse+this.reset()
-}
+	return _reverse+this.reset()
+};
 
 String.prototype.hidden = function(){
-    return _hidden+this.reset()
-}
+	return _hidden+this.reset()
+};
 
 
 String.prototype.black = function(){
-    return _fgBlack+this.reset()
+	return _fgBlack+this.reset()
 };
 
 String.prototype.red = function(){
-    return _fgRed+this.reset()
+	return _fgRed+this.reset()
 };
 
 String.prototype.green = function(){
-    return _fgGreen+this.reset()
+	return _fgGreen+this.reset()
 };
 
 String.prototype.yellow = function(){
-    return _fgYellow+this.reset()
+	return _fgYellow+this.reset()
 };
 
 String.prototype.blue = function(){
-    return _fgBlue+this.reset()
+	return _fgBlue+this.reset()
 };
 
 String.prototype.magenta = function(){
-    return _fgMagenta+this.reset()
+	return _fgMagenta+this.reset()
 };
 
 String.prototype.cyan = function(){
-    return _fgCyan+this.reset()
+	return _fgCyan+this.reset()
 };
 
 String.prototype.white = function(){
-    return _fgWhite+this.reset()
+	return _fgWhite+this.reset()
 };
 
 String.prototype.abbr = function (){
-    return this.substr(0,3);
+	return this.substr(0,3);
 };
 
 module.exports.tick = function (){
-    return '['+new Date().toString().substr(16, 8)+']';
+	return '['+new Date().toString().substr(16, 8)+']';
 };
 
 module.exports.ticktock = function (text){
-    return (module.exports.tick().substr(7, 2)%2?'TIC':'TOK')
+	return (module.exports.tick().substr(7, 2)%2?'TIC':'TOK')
 };
