@@ -1,7 +1,37 @@
 {
-  "name": "hitandmis.server",
-  "version": "0.0.1",
+  "name": "hitandmis-server",
+  "description": "server to manage hit&mis scheduling",
+  "author": "Kuravi Hewawasam <kuravih@gmail.com>",
+  "contributors": [{
+    "name": "",
+    "email": ""
+  },{
+    "name": "",
+    "email": ""
+  }],
   "scripts": {
-    "start": "node app.js"
+    "start": "node server.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kuravih/hitandmis.server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kuravih/hitandmis.server/issues"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules"
+  ],
+  "license": "MIT",
+  "version": "0.1.0",
+  "dependencies": {
+    "moment": "2.11.1 ",
+    "ws": "0.8.1",
+    "tsv": "0.2.0"
+  },
+  "devDependencies": {
+    "flightplan": "0.6.9"
   }
 }

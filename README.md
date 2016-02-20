@@ -1,2 +1,3 @@
-# hitandmis.server
-Node.js application to control hit&amp;mis
+#HiT&MIS Server
+
+Server to manage hit&mis scheduling 
