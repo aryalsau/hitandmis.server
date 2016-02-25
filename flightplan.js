@@ -1,33 +1,37 @@
 var plan = require('flightplan');
 
-var appName = 'node-app';
+var appName = 'hitandmis.server';
 var username = 'deploy';
 var startFile = 'bin/www';
 
 var tmpDir = appName+'-' + new Date().getTime();
 
-// configuration
-plan.target('staging', [
-    {
-        host: '104.131.93.214',
-        username: username,
-        agent: process.env.SSH_AUTH_SOCK
-    }
-]);
 
-plan.target('production', [
-    {
-        host: '104.131.93.215',
-        username: username,
-        agent: process.env.SSH_AUTH_SOCK
-    },
-//add in another server if you have more than one
-// {
-//   host: '104.131.93.216',
-//   username: username,
-//   agent: process.env.SSH_AUTH_SOCK
-// }
-]);
+
+ikon = {
+	host: '104.131.93.215',
+	username: username,
+	agent: process.env.SSH_AUTH_SOCK
+};
+
+pixis = {
+	host: '104.131.93.216',
+	username: username,
+	agent: process.env.SSH_AUTH_SOCK
+};
+
+stage = {
+	host: '104.131.93.214',
+	username: username,
+	agent: process.env.SSH_AUTH_SOCK
+};
+
+
+// staging server
+plan.target('staging', [stage]);
+
+//production servers
+plan.target('production', [ikon,pixis]);
 
 // run commands on localhost
 plan.local(function(local) {
