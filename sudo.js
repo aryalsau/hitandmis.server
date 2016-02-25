@@ -1,29 +1,20 @@
 // add this to /etc/sudoers to get shudown eithout password prompt
 //hitmis ALL=(ALL) NOPASSWD: /sbin/shutdown, mount, umount, date
-var colorlog = require('./logging');
+//var colorlog = require('./logging');
+var winston = require('winston');
 var exec = require('child_process').exec;
-
-var log;
-
-module.exports.loggingOn = function(){
-	log = true;
-};
-
-module.exports.loggingOff = function(){
-    log = false;
-};
 
 module.exports.shutdown = function (callback){
 	exec('sudo shutdown -h now', function(err, stdout, stderr){
 		if (err){
-			if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : shutdown failed'.red()+' '+err.toString().red());
+			winston.info('shutdown failed : '+err.toString());
 			if (callback) callback.call(true)
 		} else {
 			if (stderr){
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : shutdown failed'.red()+' '+stderr.toString().red());
+				winston.info('shutdown failed : '+stderr.toString());
 				if (callback) callback.call(true)
 			} else {
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : shutdown success');
+				winston.info('shutdown success');
 			}
 		}
 		if (callback) callback.call(null,err, stdout, stderr)
@@ -33,14 +24,14 @@ module.exports.shutdown = function (callback){
 module.exports.reboot = function (callback){
 	exec('sudo shutdown -r now', function(err, stdout, stderr){
 		if (err){
-			if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : reboot failed'.red()+' '+err.toString().red());
+			winston.info('reboot failed : '+err.toString());
 			if (callback) callback.call(true);
 		} else {
 			if (stderr){
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : reboot failed'.red()+' '+stderr.toString().red());
+				winston.info('reboot failed : '+stderr.toString());
 				if (callback) callback.call(true);
 			} else {
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : reboot success');
+				winston.info('reboot success');
 				if (callback) callback.call(false);
 			}
 		}
@@ -51,14 +42,14 @@ module.exports.reboot = function (callback){
 module.exports.mountDisk = function (callback){
 	exec('sudo mount /dev/sdb1 /media/usbdrive', function(err, stdout, stderr){
 		if (err){
-			if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : mount failed'.red()+' '+err.toString().red());
+			winston.info('mount failed : '+err.toString());
 			if (callback) callback.call(true);
 		} else {
 			if (stderr){
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : mount failed'.red()+' '+stderr.toString().red());
+				winston.info('mount failed : '+stderr.toString());
 				if (callback) callback.call(true);
 			} else {
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : mount success');
+				winston.info('mount success');
 				if (callback) callback.call(false);
 			}
 		}
@@ -69,14 +60,14 @@ module.exports.mountDisk = function (callback){
 module.exports.unmountDisk = function (callback){
 	exec('sudo umount /dev/sdb1 -l', function(err, stdout, stderr){
 		if (err){
-			if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : unmount failed'.red()+' '+err.toString().red());
+			winston.info('unmount failed : '+err.toString());
 			if (callback) callback.call(true);
 		} else {
 			if (stderr){
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : unmount failed'.red()+' '+stderr.toString().red());
+				winston.info('unmount failed : '+stderr.toString());
 				if (callback) callback.call(true);
 			} else {
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : unmount success');
+				winston.info('unmount success');
 				if (callback) callback.call(false);
 			}
 		}
@@ -87,18 +78,16 @@ module.exports.unmountDisk = function (callback){
 module.exports.setTime = function (timeStamp, callback){
 	exec('sudo date +%Y-%m-%d" "%H:%M:%S -s "'+timeStamp.time+'"', function(err, stdout, stderr){
 		if (err){
-			if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : set time failed'.red()+' '+err.toString().red());
+			winston.info('set time failed : '+err.toString());
 			if (callback) callback.call(true);
 		} else {
 			if (stderr){
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : set time failed'.red()+' '+stderr.toString().red());
+				winston.info('set time failed : '+stderr.toString());
 				if (callback) callback.call(true);
 			} else {
-				if(log) console.log(colorlog.tick().blue()+' '+'SUD'.abbr().yellow()+' : set time success '+timeStamp.time);
+				winston.info('set time success');
 				if (callback) callback.call(false);
 			}
 		}
 	});
 };
-
-module.exports.loggingOn(); //logging on by default

@@ -1,16 +1,16 @@
 var fs = require('fs');
+var winston = require('winston');
 var tsv = require('tsv');
 var moment = require('moment');
-var colorlog = require('./logging');
 var queue = require('./queue');
 var netSocket = require('net').Socket;
 
 var repeater = 0;
 var camport = 8000;
-var hostip = '129.63.134.232';
+var hostip = '127.0.0.1';
 var io;
 
-captureCallback = function(expTime){
+captureCallback = function(window, socketServer){
 	var client = new netSocket();
 	client.setEncoding('binary');
 	client.setTimeout(0,function(){
@@ -18,22 +18,24 @@ captureCallback = function(expTime){
 	});
 	var socketData = '';
 	client.connect(camport, hostip, function() {
-		client.write('capture '+expTime);
+		client.write('capture '+window.expTime);
 	});
 	client.on('data', function(chunk) {
 		socketData += chunk;
 		client.end();
 	});
 	client.on('end', function() {
-		console.log(colorlog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' file - ' + socketData);
-		io.sockets.emit('image',{file:socketData});
-		io.sockets.emit('pulse',{time:colorlog.tick().substr(1, 8),pulse:'capture'});
+		winston.info('capture : '+ window.expTime +' ms file - ' + socketData);
+		socketServer.broadcast(JSON.stringify({
+			file:{
+				name:socketData
+			}}));
 		client.destroy();
 	});
 	client.on('close', function() {
 	});
 	client.on('error', function(err) {
-		console.log(colorlog.tick().blue()+' '+'CAMERA'.abbr().red()+' : capture '+ expTime +' error connecting'.red() + ' ' + err.toString().red());
+		winston.info('capture '+ window.expTime +' error connecting' + ' ' + err.toString());
 		client.destroy();
 	});
 };
@@ -53,8 +55,7 @@ dynamicRepeat = function(period,scheduleFile,socketServer) {
 		windowList = queue.readSync(scheduleFile);
 		thisWindow = queue.isInWindow(windowList);
 		if (thisWindow) {
-			//if(verbose) console.log(colorlog.tick().blue()+' : in window - '+ window.id + ' : expTime - ' + window.expTime + '(ms) : waitTime - ' + window.waitTime+'(s)');
-			captureCallback(thisWindow);
+			captureCallback(thisWindow, socketServer);
 			localPeriod = parseInt(thisWindow.expTime) + 1000*(parseInt(thisWindow.waitTime));
 			socketServer.broadcast(JSON.stringify({
 				next:{
@@ -66,7 +67,7 @@ dynamicRepeat = function(period,scheduleFile,socketServer) {
 		} else {
 			nextWindow = queue.isNextWindow(windowList);
 			if (nextWindow) {
-				if(verbose) console.log(colorlog.tick().blue()+' TIMER'.magenta()+' : not in a window : next window in '+nextWindow.timeToWindow().asSeconds()+' s');
+				if(verbose) winston.info('not in a window, next window in '+nextWindow.timeToWindow().asSeconds()+' s');
 				localPeriod = 1000;
 				socketServer.broadcast(JSON.stringify({
 					next:{
@@ -76,7 +77,7 @@ dynamicRepeat = function(period,scheduleFile,socketServer) {
 					timer:{isRunning:isRunning()}
 				}));
 			} else {
-				if(verbose) console.log(colorlog.tick().blue()+' TIMER'.magenta()+' : no more windows');
+				if(verbose) winston.info('no more windows');
 				localPeriod = 1000;
 				socketServer.broadcast(JSON.stringify({
 					next:{
@@ -106,12 +107,12 @@ dynamicRepeat = function(period,scheduleFile,socketServer) {
 
 
 module.exports.startTimer = function(scheduleFile,socketServer) {
-	console.log(colorlog.tick().blue()+' TIMER'.red()+' : start');
+	winston.info('timer start');
 	repeater = dynamicRepeat(1000,scheduleFile,socketServer);
 };
 
 module.exports.stopTimer = function(socketServer){
-	console.log(colorlog.tick().blue()+' TIMER'.red()+' : stop');
+	winston.info('timer stop');
 	repeater.stop();
 	socketServer.broadcast(JSON.stringify({
 		timer:{isRunning:repeater.isRunning()}
@@ -131,7 +132,3 @@ module.exports.restart = function(){
 };
 
 module.exports.capture = captureCallback;
-
-//captureCallback = function(window){
-//	console.log(colorlog.tick().blue()+' CAPTURE'.magenta()+' : in window - '+ window.id + ' : expTime - ' + window.expTime + '(ms) : waitTime - ' + window.waitTime+'(s)');
-//};

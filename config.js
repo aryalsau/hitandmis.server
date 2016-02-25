@@ -1,24 +1,13 @@
 var fs = require('fs');
-
-var colorlog = require('./logging');
-
-var log;
-
-module.exports.loggingOn = function(){
-	log = true;
-};
-
-module.exports.loggingOff = function(){
-	log = false;
-};
+var winston = require('winston');
 
 module.exports.read = function(configPath, callback, data){
 	callback.bind(configPath, data);
 	fs.readFile(configPath, 'utf8', function (err, content) {
 		if (err) {
-			if(log) console.log(colorlog.tick().blue()+' '+'CFG'.abbr().blue()+' : read failed'.red()+' '+err.toString().red());
+			winston.info('config read failed : '+err.toString());
 		} else {
-			if(log) console.log(colorlog.tick().blue()+' '+'CFG'.abbr().blue()+' : read success');
+			winston.info('config read success');
 			data = configParser(content);
 			if (callback) callback(data);
 		}
@@ -42,9 +31,9 @@ module.exports.write = function(configPath, JSONconfig, callback){
 	config = JSON.parse(JSONconfig);
 	fs.writeFile(configPath, 'site='+config.site+'\ncamera='+config.camera+'\npath='+config.path , function(err) {
 		if (err) {
-			if(log) console.log(colorlog.tick().blue()+' '+'CFG'.abbr().blue()+' : write failed'.red()+' '+err.toString().red());
+			winston.info('config write failed : '+err.toString());
 		} else {
-			if(log) console.log(colorlog.tick().blue()+' '+'CFG'.abbr().blue()+' : write success');
+			winston.info('config write success');
 			if (callback) callback.call();
 		}
 	});
@@ -68,10 +57,6 @@ var configParser = function(rawData){
 	}
 	return {path:pathVar, camera:cameraVar, site:siteVar};
 };
-
-
-module.exports.loggingOn(); //logging on by default
-
 
 //site=Umass LOCSST lab
 //camera=Princeton Instruments PIXIS 1024
