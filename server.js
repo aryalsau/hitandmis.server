@@ -81,7 +81,7 @@ socketServer.on('connection', function(socket) {
 				break;
 			case 'quick-capture':
 				winston.info('quick-capture');
-				timer.capture(1000);
+				timer.capture(1000, socketServer);
 				//if (!timer.isRunning())
 				break;
 			default:

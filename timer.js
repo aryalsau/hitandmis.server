@@ -8,9 +8,8 @@ var netSocket = require('net').Socket;
 var repeater = 0;
 var camport = 8000;
 var hostip = '127.0.0.1';
-var io;
 
-captureCallback = function(window, socketServer){
+var captureCallback = function(window, socketServer){
 	var client = new netSocket();
 	client.setEncoding('binary');
 	client.setTimeout(0,function(){
@@ -35,7 +34,7 @@ captureCallback = function(window, socketServer){
 	client.on('close', function() {
 	});
 	client.on('error', function(err) {
-		winston.info('capture '+ window.expTime +' error connecting' + ' ' + err.toString());
+		winston.error('capture '+ window.expTime +' error connecting' + ' ' + err.toString());
 		client.destroy();
 	});
 };
