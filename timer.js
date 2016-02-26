@@ -5,7 +5,6 @@ var moment = require('moment');
 var queue = require('./queue');
 var netSocket = require('net').Socket;
 
-var repeater = 0;
 var camport = 8000;
 var hostip = '127.0.0.1';
 
@@ -42,8 +41,6 @@ var captureCallback = function(window, socketServer){
 
 var repeater;
 
-var verbose = true;
-
 dynamicRepeat = function(period,scheduleFile,socketServer) {
 	var timerId = 0;
 	var localPeriod = period;
@@ -66,7 +63,7 @@ dynamicRepeat = function(period,scheduleFile,socketServer) {
 		} else {
 			nextWindow = queue.isNextWindow(windowList);
 			if (nextWindow) {
-				if(verbose) winston.info('not in a window, next window in '+nextWindow.timeToWindow().asSeconds()+' s');
+				winston.info('not in a window, next window in '+nextWindow.timeToWindow().asSeconds()+' s');
 				localPeriod = 1000;
 				socketServer.broadcast(JSON.stringify({
 					next:{
@@ -76,7 +73,7 @@ dynamicRepeat = function(period,scheduleFile,socketServer) {
 					timer:{isRunning:isRunning()}
 				}));
 			} else {
-				if(verbose) winston.info('no more windows');
+				winston.info('no more windows');
 				localPeriod = 1000;
 				socketServer.broadcast(JSON.stringify({
 					next:{
