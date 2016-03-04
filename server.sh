@@ -1,3 +1,3 @@
 #!/bin/bash
-cd /home/$(whoami)/hitandmis.server
+cd /home/ikon/hitandmis.server
 npm start
