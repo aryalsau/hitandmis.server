@@ -1,3 +1,2 @@
 #!/bin/bash
-cd /home/ikon/hitandmis.server
-npm start
+/bin/su - ikon -c "cd /home/ikon/hitandmis.server; npm start"

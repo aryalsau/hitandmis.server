@@ -3,7 +3,7 @@ winston.remove(winston.transports.Console)
 	.add(winston.transports.File, {filename:'server.log'})
 	.add(winston.transports.Console, {'timestamp':true,colorize: true});
 var WebSocketServer = require('ws').Server;
-var socketServer = new WebSocketServer({port: 3000});
+var socketServer = new WebSocketServer({port: 8000});
 var timer = require('./timer');
 var config = require('./config');
 var queue = require('./queue');

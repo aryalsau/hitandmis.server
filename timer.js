@@ -5,7 +5,7 @@ var moment = require('moment');
 var queue = require('./queue');
 var netSocket = require('net').Socket;
 
-var camport = 8000;
+var camport = 3000;
 var hostip = '127.0.0.1';
 
 var captureCallback = function(window, socketServer){
