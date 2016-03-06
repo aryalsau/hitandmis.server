@@ -2,13 +2,7 @@
   "name": "hitandmis-server",
   "description": "server to manage hit&mis scheduling",
   "author": "Kuravi Hewawasam <kuravih@gmail.com>",
-  "contributors": [{
-    "name": "",
-    "email": ""
-  },{
-    "name": "",
-    "email": ""
-  }],
+  "readme": "README.md",
   "scripts": {
     "start": "node server.js"
   },
@@ -31,8 +25,5 @@
     "ws": "0.8.1",
     "tsv": "0.2.0",
     "winston":"2.1.1"
-  },
-  "devDependencies": {
-    "flightplan": "0.6.9"
   }
 }
