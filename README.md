@@ -4,7 +4,7 @@ Server to manage hit&mis scheduling
 
 Edit daemon.sh and `chmod +x daemon.sh` append the following in `etc/inittab` (with the correct location) to have the server respawn if interrupted
 
-	h1:2345:respawn:/home/'user'/hitandmis.server/daemon.sh
+	hs:2345:respawn:/home/'user'/hitandmis.server/server.sh
 
 ## server deployment
 Use `sync.sh` to deploy, (eg `./sync.sh --client=192.168.1.2 --user=ikon --camera==pixis --time`). Make sure all changes are committed before syncing.
