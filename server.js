@@ -12,26 +12,27 @@ var queue = require('./queue');
 var port = 3600;
 
 var httpServer = http.createServer(function(request, response) {
-	var configuration = config.readSync('config.cfg');
+	//var configuration = config.readSync('config.cfg');
 
-	console.log(request.url);
+	var filename = '../camdaemon'+request.url;
 
-	var filename = '../camdaemon/'+configuration.path+'/img355_212936.fits';
+	winston.info('http request for '+filename+' received');
 
 	fs.stat(filename, function(err, stat) {
 		if(err == null) {
-
 			fs.readFile(filename, "binary", function(err, file) {
 				if(err) {
+					winston.info('fs.readFile error in reading '+filename+' received');
 					response.end();
 					return;
 				}
 				//response.writeHead(200);
 				response.write(file, "binary");
 				response.end();
+				winston.info(filename+' served');
 			});
-
 		} else {
+			winston.info('fs.stat error in retrieving '+filename+' received');
 			response.end();
 			return;
 		}
