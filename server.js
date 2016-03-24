@@ -53,12 +53,12 @@ var webSocketServer = new WebSocketServer({
 });
 
 webSocketServer.broadcast = function broadcast(data) {
-	socketServer.clients.forEach(function each(client) {
+	webSocketServer.clients.forEach(function each(client) {
 		client.send(data, function ack(error) {
 			if (typeof error === 'undefined') {
 			} else {
 				console.log(error);
-				socketServer.close();
+				webSocketServer.close();
 			}
 		});
 	});
