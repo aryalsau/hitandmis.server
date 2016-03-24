@@ -26,6 +26,11 @@ case $i in
 		shift # past argument=value
 	;;
 
+	-d|--data) # sync data
+		data=true
+		shift # past argument=value
+	;;
+
 	-t|--time) # force push even if uncomitted changes available
 		time=true
 		shift # past argument=value
@@ -42,6 +47,16 @@ case $i in
 
 esac
 done
+
+if [ "$data" = true ]; then
+
+	if [ -z "$ip" ] || [ -z "$user" ]; then
+		echo 'Requires both ip and user'
+	else
+		echo TODO rsync data
+	fi
+
+fi
 
 if [ "$time" = true ]; then
 
