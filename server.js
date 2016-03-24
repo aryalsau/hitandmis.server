@@ -3,12 +3,56 @@ winston.remove(winston.transports.Console)
 	.add(winston.transports.File, {filename:'server.log'})
 	.add(winston.transports.Console, {'timestamp':true,colorize: true});
 var WebSocketServer = require('ws').Server;
-var socketServer = new WebSocketServer({port: 8000});
+var http = require('http');
+var fs = require("fs");
 var timer = require('./timer');
 var config = require('./config');
 var queue = require('./queue');
 
-socketServer.broadcast = function broadcast(data) {
+var port = 3600;
+
+var httpServer = http.createServer(function(request, response) {
+	var configuration = config.readSync('config.cfg');
+
+	console.log(request.url);
+
+	var filename = '../camdaemon/'+configuration.path+'/img355_212936.fits';
+
+	fs.stat(filename, function(err, stat) {
+		if(err == null) {
+
+			fs.readFile(filename, "binary", function(err, file) {
+				if(err) {
+					response.end();
+					return;
+				}
+				//response.writeHead(200);
+				response.write(file, "binary");
+				response.end();
+			});
+
+		} else {
+			response.end();
+			return;
+		}
+	});
+
+});
+
+httpServer.listen( port, function() {
+	winston.info("Listening to " + 'localhost' + ":" + port + "...");
+});
+
+
+
+
+
+var webSocketServer = new WebSocketServer({
+	server: httpServer,
+	autoAcceptConnections: false
+});
+
+webSocketServer.broadcast = function broadcast(data) {
 	socketServer.clients.forEach(function each(client) {
 		client.send(data, function ack(error) {
 			if (typeof error === 'undefined') {
@@ -20,7 +64,7 @@ socketServer.broadcast = function broadcast(data) {
 	});
 };
 
-socketServer.on('connection', function(socket) {
+webSocketServer.on('connection', function(socket) {
 	var clientip = socket.upgradeReq.connection.remoteAddress;
 	winston.info('client on '+clientip+' connected');
 	socket.on('close', function() {
@@ -73,15 +117,15 @@ socketServer.on('connection', function(socket) {
 				break;
 			case 'start-timer':
 				winston.info('start-timer');
-				if (!timer.isRunning()) timer.startTimer('schedule.sch',socketServer);
+				if (!timer.isRunning()) timer.startTimer('schedule.sch',webSocketServer);
 				break;
 			case 'stop-timer':
 				winston.info('stop-timer');
-				if (timer.isRunning()) timer.stopTimer(socketServer);
+				if (timer.isRunning()) timer.stopTimer(webSocketServer);
 				break;
 			case 'quick-capture':
 				winston.info('quick-capture');
-				timer.capture({expTime:1000}, socketServer);
+				timer.capture({expTime:socketMessage.data.expTime}, webSocketServer);
 				//if (!timer.isRunning())
 				break;
 			default:
