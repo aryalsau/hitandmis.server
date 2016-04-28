@@ -1,7 +1,7 @@
 var winston = require('winston');
 winston.remove(winston.transports.Console)
 	.add(winston.transports.File, {filename:'server.log'})
-	.add(winston.transports.Console, {'timestamp':true,colorize: true});
+	.add(winston.transports.Console, {'timestamp':true, colorize:true});
 var WebSocketServer = require('ws').Server;
 var http = require('http');
 var fs = require("fs");
