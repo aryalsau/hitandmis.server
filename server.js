@@ -40,17 +40,15 @@ var httpServer = http.createServer(function(request, response) {
 
 });
 
-httpServer.listen( port, function() {
-	winston.info("Listening to " + 'localhost' + ":" + port + "...");
-});
-
-
-
-
-
 var webSocketServer = new WebSocketServer({
 	server: httpServer,
 	autoAcceptConnections: false
+});
+
+httpServer.listen( port, function() {
+	winston.info('hit&mis server starting...');
+	winston.info('listening to ' + 'localhost' + ':' + port + '...');
+	if (!timer.isRunning()) timer.startTimer('schedule.sch',webSocketServer);
 });
 
 webSocketServer.broadcast = function broadcast(data) {
