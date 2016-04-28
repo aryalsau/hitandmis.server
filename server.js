@@ -74,19 +74,19 @@ webSocketServer.on('connection', function(socket) {
 		var socketMessage = JSON.parse(messageString);
 		switch(socketMessage.event){
 			case 'shutdown':
-				winston.info('shutdown');
+				winston.info('shutdown received');
 				break;
 			case 'reboot':
-				winston.info('reboot');
+				winston.info('reboot received');
 				break;
 			case 'mount':
-				winston.info('mount');
+				winston.info('mount received');
 				break;
 			case 'unmount':
-				winston.info('unmount');
+				winston.info('unmount received');
 				break;
 			case 'clocksync':
-				winston.info('clocksync');
+				winston.info('clocksync received');
 				break;
 			case 'synchronize':
 				winston.info('synchronize with client on '+clientip);
@@ -99,33 +99,33 @@ webSocketServer.on('connection', function(socket) {
 				}));
 				break;
 			case 'get-config':
-				winston.info('get-config');
+				winston.info('get-config received');
 				break;
 			case 'set-config':
-				winston.info('set-config');
+				winston.info('set-config received');
 				config.write('config.cfg', socketMessage.data, function(){
 					socket.send('config received and set');
 				});
 				break;
 			case 'get-schedule':
-				winston.info('get-schedule');
+				winston.info('get-schedule received');
 				break;
 			case 'set-schedule':
-				winston.info('set-schedule');
+				winston.info('set-schedule received');
 				queue.write('schedule.sch', socketMessage.data, function() {
 					socket.send('schedule received and set');
 				});
 				break;
 			case 'start-timer':
-				winston.info('start-timer');
+				winston.info('start-timer received');
 				if (!timer.isRunning()) timer.startTimer('schedule.sch',webSocketServer);
 				break;
 			case 'stop-timer':
-				winston.info('stop-timer');
+				winston.info('stop-timer received');
 				if (timer.isRunning()) timer.stopTimer(webSocketServer);
 				break;
 			case 'quick-capture':
-				winston.info('quick-capture');
+				winston.info('quick-capture received');
 				timer.capture({expTime:socketMessage.data.expTime}, webSocketServer);
 				//if (!timer.isRunning())
 				break;
