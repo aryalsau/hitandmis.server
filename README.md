@@ -7,7 +7,7 @@ Edit daemon.sh and `chmod +x daemon.sh` append the following in `etc/inittab` (w
 	hs:2345:respawn:/home/'user'/hitandmis.server/server.sh
 
 ## server deployment
-Use `sync.sh` to deploy, (eg `./sync.sh --client=192.168.1.2 --user=ikon --code`). Make sure all changes are committed before syncing.
+Use `sync.sh` to deploy, (eg `./sync.sh --server=192.168.1.2 --user=ikon --code`). Make sure all changes are committed before syncing.
 
 The parameters are for `sync.sh`
 
