@@ -6,13 +6,18 @@ for i in "$@"
 do
 case $i in
 
-	-ip=*|--server=*) # the ip of the hit&mis computer
+	-ip=*|--server=*) # the ip of the clent
 		ip="${i#*=}"
 		shift # past argument=value
 	;;
 
 	-u=*|--user=*) # the user on the client to run camdaemon
 		user="${i#*=}"
+		shift # past argument=value
+	;;
+
+	-l=*|--location=*) # the user on the client to run camdaemon
+		location="${i#*=}"
 		shift # past argument=value
 	;;
 
@@ -43,6 +48,7 @@ case $i in
 
 	*)
 		# unknown option
+		echo 'Unknown option'
 	;;
 
 esac
@@ -50,10 +56,11 @@ done
 
 if [ "$data" = true ]; then
 
-	if [ -z "$ip" ] || [ -z "$user" ]; then
-		echo 'Requires both ip and user'
+	if [ -z "$ip" ] || [ -z "$user" ] || [ -z "$location" ]; then
+		echo 'Requires ip, user and location'
 	else
-		echo TODO rsync data
+		echo rsyncing data to "$location"
+		rsync -a -v -P "$user"@"$ip":/home/"$user"/camdaemon/data/ "$location"
 	fi
 
 fi
@@ -81,7 +88,7 @@ if [ "$code" = true ]; then
 			echo 'Requires both ip and user'
 		else
 			echo rsyncing files to "$user"@"$ip"
-			rsync --exclude='data/*' --exclude='LICENSE' --exclude='README.md' --exclude='README.md' --exclude='sync.sh' --exclude='server.sh' -a -v * "$user"@"$ip":/home/"$user"/hitandmis.server
+			rsync --exclude='data/*' --exclude='LICENSE' --exclude='README.md' --exclude='README.md' --exclude='sync.sh' --exclude='server.sh' -a -v -P * "$user"@"$ip":/home/"$user"/hitandmis.server
 			echo rsyncing complete
 
 			echo building hitandmis.server on "$user"@"$ip"
