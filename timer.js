@@ -16,17 +16,18 @@ var captureCallback = function(window, socketServer){
 	});
 	var socketData = '';
 	client.connect(camport, hostip, function() {
-		client.write('capture '+window.expTime);
+		client.write('capture '+window.expTime+' '+window.xBin+' '+window.yBin);
 	});
 	client.on('data', function(chunk) {
 		socketData += chunk;
 		client.end();
 	});
 	client.on('end', function() {
-		winston.info('capture : '+ window.expTime +' ms file - ' + socketData);
+		fileName = socketData.split("\n")[1];
+		winston.info('capture : '+ window.expTime +' ms '+window.xBin+'x'+window.yBin+' file - ' + fileName);
 		socketServer.broadcast(JSON.stringify({
 			file:{
-				name:socketData
+				name:fileName
 			}}));
 		client.destroy();
 	});

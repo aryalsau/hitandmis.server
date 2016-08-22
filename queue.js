@@ -20,6 +20,8 @@ var Sequence = function (json) {
 		this.duration = moment.duration(moment(this.end).diff(moment(this.start)));
 	};
 	this.expTime = json.expTime;
+	this.xBin = json.xBin;
+	this.yBin = json.yBin;
 	this.waitTime = json.waitTime;
 	this.comment = json.comment;
 	this.updateDuration();
@@ -29,6 +31,8 @@ var Sequence = function (json) {
 			start: this.start.format("YYYY-MM-DDTHH:mm:ss.SSS"),
 			end: this.end.format("YYYY-MM-DDTHH:mm:ss.SSS"),
 			duration: Math.round(this.duration.asHours())+':'+this.duration.minutes()+':'+this.duration.seconds()+'.'+this.duration.milliseconds(),
+			xBin: this.xBin,
+			yBin: this.yBin,
 			expTime: this.expTime,
 			waitTime: this.waitTime,
 			comment: this.comment
@@ -49,6 +53,8 @@ var Sequence = function (json) {
 		end: this.end,
 		duration: this.duration,
 		expTime: this.expTime,
+		xBin: this.xBin,
+		yBin: this.yBin,
 		waitTime: this.waitTime,
 		comment: this.comment,
 		updateDuration: this.updateDuration,
