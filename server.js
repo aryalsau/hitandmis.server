@@ -124,7 +124,7 @@ webSocketServer.on('connection', function(socket) {
 				break;
 			case 'quick-capture':
 				winston.info('quick-capture received');
-				timer.capture({expTime:socketMessage.data.expTime}, webSocketServer);
+				timer.capture({expTime:socketMessage.data.expTime, xBin:1, yBin:1}, webSocketServer);
 				//if (!timer.isRunning())
 				break;
 			default:
